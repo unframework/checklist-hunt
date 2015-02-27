@@ -1,0 +1,22 @@
+{
+  "name": "checklist-hunt",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Nick Matantsev <nick.m@myplanet.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "~2.2.8",
+    "event-stream": "~3.2.2",
+    "vinyl-source-stream": "~1.0.0",
+    "gulp-plumber": "~0.6.6",
+    "coffeeify": "~1.0.0",
+    "gulp": "~3.8.11",
+    "gulp-livereload": "~3.8.0",
+    "gulp-serve": "~0.3.0",
+    "browserify": "~9.0.3",
+    "gulp-less": "~3.0.1",
+    "gulp-concat": "~2.5.2",
+    "hyperscript": "~1.4.4"
+  }
+}
