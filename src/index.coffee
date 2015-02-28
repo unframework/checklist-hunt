@@ -47,7 +47,7 @@ typographicCopy = (font, weight, size, lineHeight, contents) ->
 mainCopy = (contents) ->
   typographicCopy 'Open Sans', 300, '16px', 1, contents
 
-page = (title, itemList) ->
+pageLayout = (title, body) ->
   mainColumnWidth = '720px'
 
   header = h 'header', style: {
@@ -64,7 +64,17 @@ page = (title, itemList) ->
   }, h 'div', style: {
     'width': mainColumnWidth
     'margin': 'auto'
-  }, h 'ul', style: {
+  }, body
+
+  h 'div', style: {
+    'min-height': '100%'
+  }, [
+    header
+    main
+  ]
+
+page = (title, itemList) ->
+  pageLayout title, h 'ul', style: {
   }, [ for itemBody in itemList
     h 'li',
       h 'label',
@@ -74,11 +84,4 @@ page = (title, itemList) ->
           'height': '30px'
         }),
         typographicCopy 'Open Sans', 300, '18px', 1, itemBody
-  ]
-
-  h 'div', style: {
-    'min-height': '100%'
-  }, [
-    header
-    main
   ]
