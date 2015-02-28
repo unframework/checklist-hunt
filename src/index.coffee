@@ -44,7 +44,7 @@ if !window.location.hash
 rootNav = createRootNav()
 
 rootNav.when '/', (welcomeNav) ->
-  pageNode = welcomePage()
+  pageNode = welcomePage(currentBase, hex2puny)
 
   document.body.appendChild(pageNode)
   welcomeNav.whenDestroyed.then ->
