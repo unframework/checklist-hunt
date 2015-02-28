@@ -3,6 +3,7 @@
 
 marked = require 'marked'
 base64 = require 'base64-js'
+$ = require 'jquery'
 
 page = require './checklistPage.coffee'
 

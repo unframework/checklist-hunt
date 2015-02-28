@@ -19,6 +19,7 @@
     "gulp-concat": "~2.5.2",
     "hyperscript": "~1.4.4",
     "marked": "~0.3.3",
-    "base64-js": "0.0.8"
+    "base64-js": "0.0.8",
+    "jquery": "~2.1.3"
   }
 }
