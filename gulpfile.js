@@ -19,7 +19,7 @@ var previewDestDir = '.tmp/preview';
 
 function getMainScript() {
     var b = browserify({ basedir: __dirname });
-    b.require('./' + coffeeMain);
+    b.add('./' + coffeeMain);
     b.transform(coffeeify);
 
     var output = b.bundle();
@@ -38,7 +38,7 @@ function getMainStylesheet() {
 
 function getPreviewAssets() {
     return es.merge(
-        gulp.src('index.html'),
+        gulp.src([ 'index.html', 'sample.md' ]),
         getMainScript(),
         getMainStylesheet()
     );
@@ -48,7 +48,7 @@ gulp.task('default', function () {
     livereload.listen();
 
     rimraf(previewDestDir, function () {
-        gulp.watch([ coffeeSrc, lessSrc, 'index.html' ], function () {
+        gulp.watch([ coffeeSrc, lessSrc, 'index.html', 'sample.md' ], function () {
             getPreviewAssets()
                 .pipe(plumber())
                 .pipe(gulp.dest(previewDestDir))
