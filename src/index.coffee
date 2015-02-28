@@ -65,7 +65,16 @@ page = (title, itemList) ->
     'width': mainColumnWidth
     'margin': 'auto'
   }, h 'ul', style: {
-  }, [ h('li', mainCopy itemBody) for itemBody in itemList ]
+  }, [ for itemBody in itemList
+    h 'li',
+      h 'label',
+        h('input', type: 'checkbox', style: {
+          'vertical-align': 'middle'
+          'width': '30px'
+          'height': '30px'
+        }),
+        typographicCopy 'Open Sans', 300, '18px', 1, itemBody
+  ]
 
   h 'div', style: {
     'min-height': '100%'
