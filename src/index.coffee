@@ -6,6 +6,7 @@ base64 = require 'base64-js'
 $ = require 'jquery'
 createRootNav = require 'jquery-atomic-nav'
 
+welcomePage = require './welcomePage.coffee'
 page = require './checklistPage.coffee'
 
 gistApiToken = 'INSERT_TOKEN' # @todo remove
@@ -54,7 +55,18 @@ window.loadChecklistUrl = (gistUrl) ->
       hex2puny(gistCommit)
     ].join '/'
 
+# normalize missing window hash
+if !window.location.hash
+  window.location = '#/'
+
 rootNav = createRootNav()
+
+rootNav.when '/', (welcomeNav) ->
+  pageNode = welcomePage()
+
+  document.body.appendChild(pageNode)
+  welcomeNav.whenDestroyed.then ->
+    document.body.removeChild(pageNode)
 
 rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistCommitPuny, checklistNav) ->
   [ gistId, gistCommit ] = [ puny2hex(gistIdPuny), puny2hex(gistCommitPuny) ]
