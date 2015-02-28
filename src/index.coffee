@@ -2,7 +2,25 @@
 h = require 'hyperscript'
 marked = require 'marked'
 
-$.get('sample.md').then (mdData) ->
+gistUrl = 'https://gist.github.com/unframework/9e0aed502fa251de12b1'
+[ gistUserEncoded, gistIdEncoded ] = gistUrl.split('/').slice(-2)
+
+$.get('https://api.github.com/gists/' + gistIdEncoded).then (gistData) ->
+  gistFileMap = gistData.files
+
+  if !gistFileMap
+    throw new Error 'cannot get gist file list'
+
+  if encodeURIComponent(gistData.owner.login) isnt gistUserEncoded
+    throw new Error 'gist owner mismatch'
+
+  gistFileNameList = Object.keys gistFileMap # @todo ES5
+
+  if gistFileNameList.length isnt 1 or !gistFileNameList[0].match /\.md|\.markdown$/i
+    throw new Error 'expecting a single markdown file in the gist'
+
+  mdData = gistFileMap[gistFileNameList[0]].content
+
   contentMatch = /^\s*<h1[^>]*>(.*?)<\/h1>\s*<ul>([\s\S]*)<\/ul>\s*$/.exec marked(mdData)
 
   if !contentMatch
@@ -14,8 +32,8 @@ $.get('sample.md').then (mdData) ->
     throw new Error 'cannot parse list items'
 
   # @todo better cleaning
-  titleBody = contentMatch[1].replace(/</g, /&lt;/)
-  listItemBodies = (item.replace(/</g, /&lt;/) for item in listItemMatches.slice(1, -1))
+  titleBody = contentMatch[1].replace(/</g, '&lt;')
+  listItemBodies = (item.replace(/</g, '&lt;') for item in listItemMatches.slice(1, -1))
 
   document.body.appendChild(page(titleBody, listItemBodies))
 
