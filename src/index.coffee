@@ -3,14 +3,11 @@
 
 marked = require 'marked'
 base64 = require 'base64-js'
-$ = require 'jquery'
 createRootNav = require 'jquery-atomic-nav'
 
+gistApi = require './gistApi.coffee'
 welcomePage = require './welcomePage.coffee'
 page = require './checklistPage.coffee'
-
-gistApiToken = 'INSERT_TOKEN' # @todo remove
-gistApiHeaders = { Authorization: 'Bearer ' + gistApiToken }
 
 hex2puny = (hexText) ->
   punyInput = []
@@ -38,22 +35,7 @@ puny2hex = (punyText) ->
   byte2hex = -> if b < 16 then '0' + b.toString(16) else b.toString(16)
   ( byte2hex(b) for b in punyOutput ).join ''
 
-window.loadChecklistUrl = (gistUrl) ->
-  [ gistUserEncoded, gistIdEncoded ] = gistUrl.split('/').slice(-2)
-
-  currentBase = (window.location + '').replace /#.*$/, ''
-
-  $.ajax(url: 'https://api.github.com/gists/' + gistIdEncoded, headers: gistApiHeaders).then (gistData) ->
-    history = gistData.history or throw new Error 'cannot get gist history'
-    gistCommit = history[0].version
-
-    currentBase + [
-      '#'
-      'g'
-      gistUserEncoded
-      hex2puny(gistIdEncoded)
-      hex2puny(gistCommit)
-    ].join '/'
+currentBase = (window.location + '').replace /#.*$/, ''
 
 # normalize missing window hash
 if !window.location.hash
@@ -71,25 +53,7 @@ rootNav.when '/', (welcomeNav) ->
 rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistCommitPuny, checklistNav) ->
   [ gistId, gistCommit ] = [ puny2hex(gistIdPuny), puny2hex(gistCommitPuny) ]
 
-  $.ajax(url: 'https://api.github.com/gists/' + encodeURIComponent(gistId) + '/' + encodeURIComponent(gistCommit), headers: gistApiHeaders).then (gistData) ->
-    gistFileMap = gistData.files
-
-    if !gistFileMap
-      throw new Error 'cannot get gist file list'
-
-    if gistData.owner.login isnt gistUser
-      throw new Error 'gist owner mismatch'
-
-    gistFileNameList = Object.keys gistFileMap # @todo ES5
-
-    if gistFileNameList.length isnt 1 or !gistFileNameList[0].match /\.md|\.markdown$/i
-      throw new Error 'expecting a single markdown file in the gist'
-
-    if gistFileMap[gistFileNameList[0]].isTruncated
-      throw new Error 'checklist markdown is too long'
-
-    mdData = gistFileMap[gistFileNameList[0]].content
-
+  gistApi.loadGistChecklistMarkdown(gistUser, gistId, gistCommit).then (mdData) ->
     contentMatch = /^\s*<h1[^>]*>(.*?)<\/h1>\s*<ul>([\s\S]*)<\/ul>\s*$/.exec marked(mdData)
 
     if !contentMatch
