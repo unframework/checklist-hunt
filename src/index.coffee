@@ -4,6 +4,7 @@
 marked = require 'marked'
 base64 = require 'base64-js'
 createRootNav = require 'jquery-atomic-nav'
+createElement = require 'virtual-dom/create-element'
 
 gistApi = require './gistApi.coffee'
 welcomePage = require './welcomePage.coffee'
@@ -46,9 +47,9 @@ rootNav = createRootNav()
 rootNav.when '/', (welcomeNav) ->
   pageNode = welcomePage(currentBase, hex2puny)
 
-  document.body.appendChild(pageNode)
+  document.body.appendChild(createElement pageNode)
   welcomeNav.whenDestroyed.then ->
-    document.body.removeChild(pageNode)
+    document.body.removeChild(createElement pageNode)
 
 rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistCommitPuny, checklistNav) ->
   [ gistId, gistCommit ] = [ puny2hex(gistIdPuny), puny2hex(gistCommitPuny) ]
@@ -69,6 +70,6 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
 
     pageNode = page(titleBody, listItemBodies)
 
-    document.body.appendChild(pageNode)
+    document.body.appendChild(createElement pageNode)
     checklistNav.whenDestroyed.then ->
-      document.body.removeChild(pageNode)
+      document.body.removeChild(createElement pageNode)

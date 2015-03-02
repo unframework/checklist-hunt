@@ -1,4 +1,4 @@
-h = require 'hyperscript'
+h = require 'virtual-dom/h'
 
 design = require './design.coffee'
 pageLayout = require './pageLayout.coffee'

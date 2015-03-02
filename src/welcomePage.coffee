@@ -1,4 +1,4 @@
-h = require 'hyperscript'
+h = require 'virtual-dom/h'
 $ = require 'jquery'
 
 gistApi = require './gistApi.coffee'
