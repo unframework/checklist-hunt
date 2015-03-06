@@ -8,7 +8,7 @@ pageLayout = require './pageLayout.coffee'
 loadChecklistUrl = (currentBase, hex2puny, gistUrl) ->
   [ gistUserEncoded, gistIdEncoded ] = gistUrl.split('/').slice(-2)
 
-  gistApi.loadGistLatestCommit(decodeURIComponent(gistUserEncoded), decodeURIComponent(gistIdEncoded)).then (gistCommit) ->
+  gistApi.loadGistLatestCommitRawObjectId(decodeURIComponent(gistUserEncoded), decodeURIComponent(gistIdEncoded)).then (gistCommit) ->
     currentBase + [
       '#'
       'g'
