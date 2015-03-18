@@ -34,5 +34,20 @@ var server = app.listen(process.env.PORT || 3000);
 
 var wsServer = new WebSocketServer({ server: server });
 
-wsServer.on('connection', function(socket) {
+wsServer.on('connection', function (socket) {
+    socket.on('message', function (dataJson) {
+        var data = null;
+
+        try {
+            data = [].concat(JSON.parse(dataJson));
+        } catch (e) {
+            return;
+        }
+
+        callId = data[0];
+        methodName = data[1];
+        args = data.slice(2);
+
+        socket.send(JSON.stringify([ callId, args ]));
+    });
 });

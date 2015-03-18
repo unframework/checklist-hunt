@@ -7,6 +7,36 @@ gistApiHeaders = { Authorization: 'Bearer ' + gistApiToken }
 bridgeSocket = new WebSocket((window.location + '').replace(/^https?/, 'ws').replace(/#.*$/, ''))
 bridgeSocket.onerror = (e) -> console.log('ws error', e)
 
+bridgeSocket.onmessage = (e) ->
+  data = JSON.parse e.data
+
+  callId = data[0]
+
+  call = callMap[callId]
+
+  if call
+    call(data[1])
+
+callMap = {}
+
+remoteCall = (methodName, args...) ->
+  callId = Math.random() + '' # @todo this
+  timeoutId = null
+
+  cleanup = ->
+    window.clearTimeout timeoutId
+    delete callMap[callId]
+
+  timeoutId = window.setTimeout cleanup, 5000
+
+  callMap[callId] = (data) ->
+    cleanup()
+
+    console.log data
+
+  bridgeSocket.send JSON.stringify([ callId, methodName ].concat args)
+
+
 createRejection = (e) ->
   error = new $.Deferred
   error.reject e
@@ -14,6 +44,8 @@ createRejection = (e) ->
   error
 
 module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
+  remoteCall 'hithere!', 'arg1'
+
   $.ajax(url: 'https://api.github.com/gists/' + encodeURIComponent(gistId), headers: gistApiHeaders).then (gistData) ->
     # workaround for incomplete Deferred error handling
     try
