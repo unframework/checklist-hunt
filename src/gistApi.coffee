@@ -14,7 +14,10 @@ bridgeSocket.onmessage = (e) ->
   call = callMap[data[0]]
 
   if call
-    call(data[1])
+    if data.length is 2
+      call(null, data[1])
+    else
+      call(data[2])
 
 callMap = {}
 
@@ -32,9 +35,13 @@ remoteCall = (methodName, args...) ->
       reject()
     , 5000
 
-    callMap[callId] = (data) ->
+    callMap[callId] = (args...) ->
       cleanup()
-      resolve(data)
+
+      if args.length is 2
+        resolve(args[1])
+      else
+        reject(args[0])
 
     bridgeSocket.send JSON.stringify([ callId, methodName ].concat args)
 

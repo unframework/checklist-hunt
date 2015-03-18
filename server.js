@@ -53,13 +53,15 @@ wsServer.on('connection', function (socket) {
         var result = undefined;
 
         try {
-            result = method.apply(null, args);
+            result = Promise.resolve(method.apply(null, args));
         } catch (e) {
-            return; // @todo this
+            result = Promise.reject();
         }
 
-        Promise.resolve(result).then(function (resultValue) {
+        result.then(function (resultValue) {
             socket.send(JSON.stringify([ callId, resultValue ]));
+        }, function (error) {
+            socket.send(JSON.stringify([ callId, null, error ]));
         });
     });
 });
