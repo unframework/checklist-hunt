@@ -4,6 +4,9 @@ var browserify = require('browserify');
 var coffeeify = require('coffeeify');
 var concat = require('concat-stream');
 var WebSocketServer = require("ws").Server;
+var Promise = require('bluebird');
+
+var methods = require('./methods.js');
 
 var mainHtml = fs.readFileSync(__dirname + '/index.html');
 var mainJs = null;
@@ -44,10 +47,19 @@ wsServer.on('connection', function (socket) {
             return;
         }
 
-        callId = data[0];
-        methodName = data[1];
-        args = data.slice(2);
+        var callId = data[0];
+        var method = methods[data[1]];
+        var args = data.slice(2);
+        var result = undefined;
 
-        socket.send(JSON.stringify([ callId, args ]));
+        try {
+            result = method.apply(null, args);
+        } catch (e) {
+            return; // @todo this
+        }
+
+        Promise.resolve(result).then(function (resultValue) {
+            socket.send(JSON.stringify([ callId, resultValue ]));
+        });
     });
 });

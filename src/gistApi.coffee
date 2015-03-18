@@ -46,7 +46,7 @@ createRejection = (e) ->
   error
 
 module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
-  remoteCall('hithere!', 'arg1').then (data) ->
+  remoteCall('getGistInfo', gistId).then (data) ->
     console.log 'result', data
 
   $.ajax(url: 'https://api.github.com/gists/' + encodeURIComponent(gistId), headers: gistApiHeaders).then (gistData) ->
