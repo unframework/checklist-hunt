@@ -1,5 +1,6 @@
 
 $ = require 'jquery'
+Promise = require 'bluebird'
 
 gistApiToken = process.env.GIST_API_TOKEN
 gistApiHeaders = { Authorization: 'Bearer ' + gistApiToken }
@@ -10,9 +11,7 @@ bridgeSocket.onerror = (e) -> console.log('ws error', e)
 bridgeSocket.onmessage = (e) ->
   data = JSON.parse e.data
 
-  callId = data[0]
-
-  call = callMap[callId]
+  call = callMap[data[0]]
 
   if call
     call(data[1])
@@ -23,18 +22,21 @@ remoteCall = (methodName, args...) ->
   callId = Math.random() + '' # @todo this
   timeoutId = null
 
-  cleanup = ->
-    window.clearTimeout timeoutId
-    delete callMap[callId]
+  new Promise (resolve, reject) ->
+    cleanup = ->
+      window.clearTimeout timeoutId
+      delete callMap[callId]
 
-  timeoutId = window.setTimeout cleanup, 5000
+    timeoutId = window.setTimeout ->
+      cleanup()
+      reject()
+    , 5000
 
-  callMap[callId] = (data) ->
-    cleanup()
+    callMap[callId] = (data) ->
+      cleanup()
+      resolve(data)
 
-    console.log data
-
-  bridgeSocket.send JSON.stringify([ callId, methodName ].concat args)
+    bridgeSocket.send JSON.stringify([ callId, methodName ].concat args)
 
 
 createRejection = (e) ->
@@ -44,7 +46,8 @@ createRejection = (e) ->
   error
 
 module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
-  remoteCall 'hithere!', 'arg1'
+  remoteCall('hithere!', 'arg1').then (data) ->
+    console.log 'result', data
 
   $.ajax(url: 'https://api.github.com/gists/' + encodeURIComponent(gistId), headers: gistApiHeaders).then (gistData) ->
     # workaround for incomplete Deferred error handling
