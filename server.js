@@ -3,6 +3,7 @@ var express = require('express');
 var browserify = require('browserify');
 var coffeeify = require('coffeeify');
 var concat = require('concat-stream');
+var WebSocketServer = require("ws").Server;
 
 var mainHtml = fs.readFileSync(__dirname + '/index.html');
 var mainJs = null;
@@ -29,4 +30,9 @@ app.get('/bundle.js', function(request, response) {
     response.send(mainJs);
 });
 
-app.listen(process.env.PORT || 3000);
+var server = app.listen(process.env.PORT || 3000);
+
+var wsServer = new WebSocketServer({ server: server });
+
+wsServer.on('connection', function(socket) {
+});

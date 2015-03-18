@@ -1,8 +1,11 @@
 
 $ = require 'jquery'
 
-gistApiToken = 'INSERT_TOKEN' # @todo remove
+gistApiToken = process.env.GIST_API_TOKEN
 gistApiHeaders = { Authorization: 'Bearer ' + gistApiToken }
+
+bridgeSocket = new WebSocket((window.location + '').replace(/^https?/, 'ws').replace(/#.*$/, ''))
+bridgeSocket.onerror = (e) -> console.log('ws error', e)
 
 createRejection = (e) ->
   error = new $.Deferred
