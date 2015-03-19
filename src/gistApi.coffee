@@ -50,28 +50,7 @@ createRejection = (e) ->
   error
 
 module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
-  remoteCall('getGistInfo', gistId).then (gistData) ->
-    gistFileMap = gistData.files
-
-    if !gistFileMap
-      throw new Error 'cannot get gist file list'
-
-    if gistData.owner.login isnt gistUser
-      throw new Error 'gist owner mismatch'
-
-    gistFileNameList = Object.keys gistFileMap # @todo ES5
-
-    if gistFileNameList.length isnt 1 or !gistFileNameList[0].match /\.md|\.markdown$/i
-      throw new Error 'expecting a single markdown file in the gist'
-
-    rawUrl = gistFileMap[gistFileNameList[0]].raw_url
-    rawUrlParts = rawUrl.split('/').slice(-3)
-
-    if rawUrlParts[0] isnt 'raw'
-      throw new Error 'cannot parse raw URL'
-
-    [ objectId, fileName ] = [ rawUrlParts[1], rawUrlParts[2] ]
-
+  remoteCall('getGistInfo', gistUser, gistId).then (objectId) ->
     objectId
   , (resp) ->
     throw new Error 'error fetching gist data from GitHub'
