@@ -61,7 +61,8 @@ wsServer.on('connection', function (socket) {
         result.then(function (resultValue) {
             socket.send(JSON.stringify([ callId, resultValue ]));
         }, function (error) {
-            socket.send(JSON.stringify([ callId, null, error ]));
+            console.error(error);
+            socket.send(JSON.stringify([ callId, null, true ]));
         });
     });
 });
