@@ -2,7 +2,8 @@
 $ = require 'jquery'
 Promise = require 'bluebird'
 
-bridgeSocket = new WebSocket((window.location + '').replace(/^https?/, 'ws').replace(/#.*$/, ''))
+# this converts https into wss
+bridgeSocket = new WebSocket((window.location + '').replace(/^http/, 'ws').replace(/#.*$/, ''))
 bridgeSocket.onerror = (e) -> console.log('ws error', e)
 
 bridgeSocket.onmessage = (e) ->
