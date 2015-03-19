@@ -31,14 +31,14 @@ module.exports = (currentBase, hex2puny) ->
         $form.attr('disabled', true)
         $input.attr('disabled', true)
 
-        urlResult.always ->
+        urlResult.finally ->
           $form.attr('disabled', false)
           $input.attr('disabled', false)
 
         urlResult.then (url) ->
           window.location.href = url
 
-        urlResult.fail (e) ->
+        urlResult.catch (e) ->
           $form.find('.error').text(e.message)
     }, [
       h 'div.error', style: { color: '#f00' }
