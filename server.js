@@ -1,3 +1,6 @@
+
+require('coffee-script/register');
+
 var fs = require('fs');
 var express = require('express');
 var browserify = require('browserify');
@@ -6,7 +9,7 @@ var concat = require('concat-stream');
 var WebSocketServer = require("ws").Server;
 var Promise = require('bluebird');
 
-var methods = require('./methods.js');
+var methods = require('./methods.coffee');
 
 var mainHtml = fs.readFileSync(__dirname + '/index.html');
 var mainJs = null;
