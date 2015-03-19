@@ -45,11 +45,11 @@ if !window.location.hash
 rootNav = createRootNav()
 
 rootNav.when '/', (welcomeNav) ->
-  pageNode = welcomePage(currentBase, hex2puny)
+  pageNode = createElement welcomePage(currentBase, hex2puny)
 
-  document.body.appendChild(createElement pageNode)
+  document.body.appendChild(pageNode)
   welcomeNav.whenDestroyed.then ->
-    document.body.removeChild(createElement pageNode)
+    document.body.removeChild(pageNode)
 
 rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistCommitPuny, checklistNav) ->
   [ gistId, gistCommit ] = [ puny2hex(gistIdPuny), puny2hex(gistCommitPuny) ]
@@ -68,8 +68,8 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
     titleBody = contentMatch[1].replace(/</g, '&lt;')
     listItemBodies = (item.replace(/</g, '&lt;') for item in listItemMatches.slice(1, -1))
 
-    pageNode = page(titleBody, listItemBodies)
+    pageNode = createElement page(titleBody, listItemBodies)
 
-    document.body.appendChild(createElement pageNode)
+    document.body.appendChild(pageNode)
     checklistNav.whenDestroyed.then ->
-      document.body.removeChild(createElement pageNode)
+      document.body.removeChild(pageNode)
