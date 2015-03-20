@@ -2,6 +2,8 @@
 $ = require 'jquery'
 Promise = require 'bluebird'
 
+server = new RemoteControl()
+
 module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
   server.getGistInfo(gistUser, gistId).then (objectId) ->
     objectId
