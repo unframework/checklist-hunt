@@ -6,8 +6,8 @@ var express = require('express');
 var browserify = require('browserify');
 var coffeeify = require('coffeeify');
 var concat = require('concat-stream');
-var WebSocketServer = require("ws").Server;
 var Promise = require('bluebird');
+var RemoteControl = require('remote-control');
 
 var methods = require('./methods.coffee');
 
@@ -38,34 +38,5 @@ app.get('/bundle.js', function(request, response) {
 
 var server = app.listen(process.env.PORT || 3000);
 
-var wsServer = new WebSocketServer({ server: server });
-
-wsServer.on('connection', function (socket) {
-    socket.on('message', function (dataJson) {
-        var data = null;
-
-        try {
-            data = [].concat(JSON.parse(dataJson));
-        } catch (e) {
-            return;
-        }
-
-        var callId = data[0];
-        var method = methods[data[1]];
-        var args = data.slice(2);
-        var result = undefined;
-
-        try {
-            result = Promise.resolve(method.apply(null, args));
-        } catch (e) {
-            result = Promise.reject();
-        }
-
-        result.then(function (resultValue) {
-            socket.send(JSON.stringify([ callId, resultValue ]));
-        }, function (error) {
-            console.error(error);
-            socket.send(JSON.stringify([ callId, null, true ]));
-        });
-    });
-});
+var rc = new RemoteControl(methods, server);
+app.get('/remote.js', rc.clientMiddleware)
