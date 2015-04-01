@@ -5,8 +5,7 @@ marked = require 'marked'
 base64 = require 'base64-js'
 createRootNav = require 'jquery-atomic-nav'
 createElement = require 'virtual-dom/create-element'
-
-repl = require './repl.coffee'
+renderLive = require 'vdom-live'
 
 gistApi = require './gistApi.coffee'
 welcomePage = require './welcomePage.coffee'
@@ -72,7 +71,7 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
 
     checklistPage = new ChecklistPage(titleBody, listItemBodies)
 
-    pageNode = repl -> checklistPage.render()
+    pageNode = renderLive -> checklistPage.render()
 
     document.body.appendChild(pageNode)
     checklistNav.whenDestroyed.then ->
