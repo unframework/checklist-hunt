@@ -8,7 +8,7 @@ createElement = require 'virtual-dom/create-element'
 
 gistApi = require './gistApi.coffee'
 welcomePage = require './welcomePage.coffee'
-page = require './checklistPage.coffee'
+checklistPage = require './checklistPage.coffee'
 
 hex2puny = (hexText) ->
   punyInput = []
@@ -68,7 +68,7 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
     titleBody = contentMatch[1].replace(/</g, '&lt;')
     listItemBodies = (item.replace(/</g, '&lt;') for item in listItemMatches.slice(1, -1))
 
-    pageNode = createElement page(titleBody, listItemBodies)
+    pageNode = createElement checklistPage(titleBody, listItemBodies)
 
     document.body.appendChild(pageNode)
     checklistNav.whenDestroyed.then ->
