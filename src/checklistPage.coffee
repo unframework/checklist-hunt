@@ -1,5 +1,4 @@
 h = require 'virtual-dom/h'
-thunk = require 'vdom-thunk'
 
 design = require './design.coffee'
 pageLayout = require './pageLayout.coffee'
@@ -17,9 +16,6 @@ class ChecklistPage
   constructor: (@title, @itemList) ->
     @data = {}
 
-    @renderItemCheckbox = (itemBody) =>
-      renderCheckbox (v) => @data[itemBody] = v
-
   render: ->
     pageLayout @title, [
       h 'ul', style: {
@@ -29,7 +25,7 @@ class ChecklistPage
             background: if @data[itemBody] then '#f8fff8' else ''
           },
             h 'label', [
-              thunk(@renderItemCheckbox, itemBody),
+              renderCheckbox (v) => @data[itemBody] = v
               design.typographicCopy 'Open Sans', 300, '18px', 1, itemBody
             ]
       ]
