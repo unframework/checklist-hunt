@@ -20,7 +20,7 @@ module.exports = (render) ->
 
         newTree = render()
 
-        rootNode = patch(rootNode, diff(tree, newTree))
+        patch(rootNode, diff(tree, newTree))
         tree = newTree
 
   $(window).on 'hashchange', ->
