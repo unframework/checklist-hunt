@@ -15,6 +15,10 @@ module.exports = (render) ->
   requestRedraw = ->
     # debounce redraw requests
     if redrawId is null
+      if !rootNode.parentNode
+        cleanup()
+        return
+
       redrawId = requestAnimationFrame ->
         redrawId = null
 
@@ -23,10 +27,11 @@ module.exports = (render) ->
         patch(rootNode, diff(tree, newTree))
         tree = newTree
 
-  $(window).on 'hashchange', ->
-    requestRedraw()
+  $(window).on 'hashchange', requestRedraw
+  $(document.body).on 'click', requestRedraw
 
-  $(document.body).on 'click', ->
-    requestRedraw()
+  cleanup = ->
+    $(window).off 'hashchange', requestRedraw
+    $(document.body).off 'click', requestRedraw
 
   return rootNode
