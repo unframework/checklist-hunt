@@ -12,17 +12,16 @@ var RemoteControl = require('remote-control');
 var methods = require('./methods.coffee');
 
 var mainHtml = fs.readFileSync(__dirname + '/index.html');
-var mainJs = null;
 
 // build the client-side code
-(function () {
+var mainJsWhenReady = new Promise(function (resolve) {
     var b = browserify({ basedir: __dirname + '/src' });
     b.transform(coffeeify);
     b.add('./index.coffee');
     b.bundle().pipe(concat(function(js) {
-        mainJs = js.toString();
+        resolve(js.toString());
     }));
-})();
+});
 
 var app = express();
 
@@ -32,8 +31,10 @@ app.get('/', function(request, response) {
 });
 
 app.get('/bundle.js', function(request, response) {
-    response.setHeader('Content-Type', 'text/javascript');
-    response.send(mainJs);
+    mainJsWhenReady.then(function (mainJs) {
+        response.setHeader('Content-Type', 'text/javascript');
+        response.send(mainJs);
+    });
 });
 
 var server = app.listen(process.env.PORT || 3000);
