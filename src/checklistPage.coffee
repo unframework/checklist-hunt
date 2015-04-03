@@ -29,10 +29,19 @@ formatPercent = (v) ->
   frac = Math.round(100 * (v * 100 - whole)) % 100
   whole + '.' + ('0' + frac).slice(-2) + '%'
 
+class Assessment
+  constructor: (@_itemList, @_selectedItemList) ->
+    for item in @_selectedItemList
+      if @_itemList.indexOf(item) is -1
+        throw new Error 'unknown selected item ' + item
+
+    @_ratio = @_selectedItemList.length / @_itemList.length
+    @percent = Math.round(@_ratio * 100) + '%'
+
 class ChecklistPage
   constructor: (@title, @itemList) ->
-    @data = {}
-    @isEditing = true
+    @_editedData = {}
+    @_assessment = null
     @score = null
 
   render: ->
@@ -41,25 +50,19 @@ class ChecklistPage
       }, [
         for itemBody in @itemList
           h 'li', style: {
-            background: if @data[itemBody] then '#f8fff8' else ''
+            background: if @_editedData[itemBody] then '#f8fff8' else ''
           },
             h 'label', [
-              if @isEditing then do (itemBody) => renderCheckbox (v) => @data[itemBody] = v else null
+              if !@_assessment then do (itemBody) => renderCheckbox (v) => @_editedData[itemBody] = v else null
               design.typographicCopy 'Open Sans', 300, '18px', 1, itemBody
             ]
       ]
 
-      if @isEditing
+      if !@_assessment
         renderButton 'I’m Done!', =>
-          @isEditing = false
-
-          count = 0
-          for k, v of @data
-            if v then count += 1
-
-          @score = formatPercent(count / @itemList.length)
+          @_assessment = new Assessment @itemList, (item for item in @itemList when @_editedData[item])
       else
-        h 'div', design.typographicCopy 'Open Sans', 300, '18px', 1, 'Your score is: ' + @score
+        h 'div', design.typographicCopy 'Open Sans', 300, '18px', 1, 'Your score is: ' + @_assessment.percent
     ]
 
 module.exports = ChecklistPage
