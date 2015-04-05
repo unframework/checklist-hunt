@@ -71,6 +71,8 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
 
     checklistPage = new ChecklistPage checklistNav, titleBody, listItemBodies, (selectedItemIndexList) ->
       gistApi.createAssessment gistUser, gistId, gistCommit, selectedItemIndexList
+    , (key) ->
+      gistApi.loadAssessmentSelectedItemIndexList gistUser, gistId, gistCommit, key
 
     pageNode = renderLive -> checklistPage.render()
 

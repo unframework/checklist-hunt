@@ -11,6 +11,7 @@ module.exports.loadGistLatestCommitRawObjectId = (gistUser, gistId) ->
     throw new Error 'error fetching gist data from GitHub'
 
 module.exports.createAssessment = server.createAssessment
+module.exports.loadAssessmentSelectedItemIndexList = server.loadAssessmentSelectedItemIndexList
 
 module.exports.loadGistChecklistMarkdown = (gistUser, gistId, gistObjectId) ->
   $.get('https://gist.githubusercontent.com/' + encodeURIComponent(gistUser) + '/' + encodeURIComponent(gistId) + '/raw/' + encodeURIComponent(gistObjectId)).then (gistData) ->

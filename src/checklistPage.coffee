@@ -31,14 +31,20 @@ formatPercent = (v) ->
   whole + '.' + ('0' + frac).slice(-2) + '%'
 
 class ChecklistPage
-  constructor: (@_nav, @title, @itemList, @onSave) ->
+  constructor: (@_nav, @title, @itemList, @onSave, loadSelectedItemIndexList) ->
     @_editedData = {}
     @_assessment = null
     @score = null
 
-  saveCurrentAssessment: ->
-    @_assessment = new Assessment @itemList, (item for item in @itemList when @_editedData[item])
+    @_nav.whenRoot (rootNav) =>
+      @_assessment = null
 
+    @_nav.when '/:assessmentKey', (assessmentKey, assessmentNav) =>
+      loadSelectedItemIndexList(assessmentKey).then (list) =>
+        if assessmentNav.isActive
+          @_assessment = new Assessment @itemList, (@itemList[idx] for idx in list)
+
+  saveCurrentAssessment: ->
     @onSave(index for item, index in @itemList when @_editedData[item]).then (assessmentKey) =>
       @_nav.enter '/' + encodeURIComponent assessmentKey
 

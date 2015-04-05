@@ -65,4 +65,10 @@ class Client
       ]).then ->
         key
 
+  loadAssessmentSelectedItemIndexList: (gistUser, gistId, gistCommit, key) ->
+    db.getAsync('select selectedItemIndexList from Assessment where key = ? and gistUser = ? and gistId = ? and gistCommit = ?', [
+      key, gistUser, gistId, gistCommit
+    ]).then (row) ->
+      JSON.parse row.selectedItemIndexList
+
 module.exports = Client
