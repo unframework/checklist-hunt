@@ -69,7 +69,8 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
     titleBody = contentMatch[1].replace(/</g, '&lt;')
     listItemBodies = (item.replace(/</g, '&lt;') for item in listItemMatches.slice(1, -1))
 
-    checklistPage = new ChecklistPage(titleBody, listItemBodies)
+    checklistPage = new ChecklistPage titleBody, listItemBodies, (selectedItemIndexList) ->
+      gistApi.createAssessment gistUser, gistId, gistCommit, selectedItemIndexList
 
     pageNode = renderLive -> checklistPage.render()
 

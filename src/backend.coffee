@@ -3,6 +3,12 @@ https = require('https')
 url = require('url')
 Promise = require('bluebird')
 
+crypto = Promise.promisifyAll(require('crypto'))
+sqlite3 = Promise.promisifyAll(require('sqlite3').verbose())
+db = new sqlite3.Database('data.db')
+
+db.run 'create table if not exists Assessment (key, gistUser, gistId, gistCommit, selectedItemIndexList)'
+
 gistApiToken = process.env.GIST_API_TOKEN
 
 parseGistData = (gistUser, gistData) ->
@@ -50,5 +56,13 @@ class Client
             resolve parseGistData(gistUser, JSON.parse(data.join('')))
       ).on 'error', (e) ->
         reject e
+
+  createAssessment: (gistUser, gistId, gistCommit, selectedItemIndexList) ->
+    crypto.randomBytesAsync(12).then (keyBytes) ->
+      key = keyBytes.toString('base64').replace(/\//g, '_').replace(/\+/g, '-')
+      db.runAsync('insert into Assessment (key, gistUser, gistId, gistCommit, selectedItemIndexList) values (?, ?, ?, ?, ?)', [
+        key, gistUser, gistId, gistCommit, JSON.stringify(selectedItemIndexList)
+      ]).then ->
+        key
 
 module.exports = Client
