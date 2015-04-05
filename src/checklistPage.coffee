@@ -2,6 +2,7 @@ h = require 'virtual-dom/h'
 
 design = require './design.coffee'
 pageLayout = require './pageLayout.coffee'
+Assessment = require './Assessment.coffee'
 
 renderCheckbox = (setValue) ->
   h 'input', type: 'checkbox', style: {
@@ -28,15 +29,6 @@ formatPercent = (v) ->
   whole = Math.floor(v * 100)
   frac = Math.round(100 * (v * 100 - whole)) % 100
   whole + '.' + ('0' + frac).slice(-2) + '%'
-
-class Assessment
-  constructor: (@_itemList, @_selectedItemList) ->
-    for item in @_selectedItemList
-      if @_itemList.indexOf(item) is -1
-        throw new Error 'unknown selected item ' + item
-
-    @_ratio = @_selectedItemList.length / @_itemList.length
-    @percent = Math.round(@_ratio * 100) + '%'
 
 class ChecklistPage
   constructor: (@title, @itemList) ->
