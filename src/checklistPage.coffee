@@ -31,10 +31,16 @@ formatPercent = (v) ->
   whole + '.' + ('0' + frac).slice(-2) + '%'
 
 class ChecklistPage
-  constructor: (@title, @itemList, @onSave) ->
+  constructor: (@_nav, @title, @itemList, @onSave) ->
     @_editedData = {}
     @_assessment = null
     @score = null
+
+  saveCurrentAssessment: ->
+    @_assessment = new Assessment @itemList, (item for item in @itemList when @_editedData[item])
+
+    @onSave(index for item, index in @itemList when @_editedData[item]).then (assessmentKey) =>
+      @_nav.enter '/' + encodeURIComponent assessmentKey
 
   render: ->
     pageLayout @title, [
@@ -52,9 +58,7 @@ class ChecklistPage
 
       if !@_assessment
         renderButton 'I’m Done!', =>
-          @_assessment = new Assessment @itemList, (item for item in @itemList when @_editedData[item])
-
-          @onSave (index for item, index in @itemList when @_editedData[item])
+          @saveCurrentAssessment()
       else
         h 'div', design.typographicCopy 'Open Sans', 300, '18px', 1, 'Your score is: ' + @_assessment.percent
     ]

@@ -3,7 +3,7 @@
 
 marked = require 'marked'
 base64 = require 'base64-js'
-createRootNav = require 'jquery-atomic-nav'
+createRootNav = require 'atomic-routes'
 createElement = require 'virtual-dom/create-element'
 renderLive = require 'vdom-live'
 
@@ -69,7 +69,7 @@ rootNav.when '/g/:gistUser/:gistId/:gistCommit', (gistUser, gistIdPuny, gistComm
     titleBody = contentMatch[1].replace(/</g, '&lt;')
     listItemBodies = (item.replace(/</g, '&lt;') for item in listItemMatches.slice(1, -1))
 
-    checklistPage = new ChecklistPage titleBody, listItemBodies, (selectedItemIndexList) ->
+    checklistPage = new ChecklistPage checklistNav, titleBody, listItemBodies, (selectedItemIndexList) ->
       gistApi.createAssessment gistUser, gistId, gistCommit, selectedItemIndexList
 
     pageNode = renderLive -> checklistPage.render()
