@@ -9,7 +9,7 @@ var concat = require('concat-stream');
 var Promise = require('bluebird');
 var RemoteControl = require('remote-control');
 
-var methods = require('./methods.coffee');
+var methods = require('./src/backend.coffee');
 
 var mainHtml = fs.readFileSync(__dirname + '/index.html');
 
