@@ -18,7 +18,7 @@
     "marked": "~0.3.3",
     "remote-control": "~0.3.1",
     "sqlite3": "^3.0.5",
-    "vdom-live": "^0.1.1",
+    "vdom-live": "^0.2.0",
     "virtual-dom": "^2.0.1",
     "ws": "~0.7.1"
   }

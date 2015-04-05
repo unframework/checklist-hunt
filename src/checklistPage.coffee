@@ -43,6 +43,7 @@ class ChecklistPage
       loadSelectedItemIndexList(assessmentKey).then (list) =>
         if assessmentNav.isActive
           @_assessment = new Assessment @itemList, (@itemList[idx] for idx in list)
+          window.vdomLiveRefresh()
 
   saveCurrentAssessment: ->
     @onSave(index for item, index in @itemList when @_editedData[item]).then (assessmentKey) =>
