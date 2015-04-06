@@ -32,21 +32,26 @@ formatPercent = (v) ->
 
 class ChecklistPage
   constructor: (@_nav, @title, @itemList, @onSave, loadSelectedItemIndexList) ->
-    @_editedData = {}
+    @_editedData = null
     @_assessment = null
-    @score = null
 
-    @_nav.whenRoot (rootNav) =>
+    @_nav.whenRoot =>
+      @_editedData = {}
       @_assessment = null
 
     @_nav.when '/:assessmentKey', (assessmentKey, assessmentNav) =>
+      @_editedData = null
+
       loadSelectedItemIndexList(assessmentKey).then (list) =>
         if assessmentNav.isActive
           @_assessment = new Assessment @itemList, (@itemList[idx] for idx in list)
           window.vdomLiveRefresh()
 
   saveCurrentAssessment: ->
-    @onSave(index for item, index in @itemList when @_editedData[item]).then (assessmentKey) =>
+    itemIndexList = (index for item, index in @itemList when @_editedData[item])
+    @_editedData = null
+
+    @onSave(itemIndexList).then (assessmentKey) =>
       @_nav.enter '/' + encodeURIComponent assessmentKey
 
   render: ->
@@ -54,19 +59,22 @@ class ChecklistPage
       h 'ul', style: {
       }, [
         for itemBody in @itemList
+          isOn = (if @_editedData then !!@_editedData[itemBody]) or (if @_assessment then @_assessment.getItemIsOn(itemBody))
+
           h 'li', style: {
-            background: if @_editedData[itemBody] then '#f8fff8' else ''
+            background: if isOn then '#f8fff8' else ''
           },
             h 'label', [
-              if !@_assessment then do (itemBody) => renderCheckbox (v) => @_editedData[itemBody] = v else null
+              if @_editedData then do (itemBody) => renderCheckbox (v) => @_editedData[itemBody] = v else null
               design.typographicCopy 'Open Sans', 300, '18px', 1, itemBody
             ]
       ]
 
-      if !@_assessment
+      if @_editedData
         renderButton 'I’m Done!', =>
           @saveCurrentAssessment()
-      else
+
+      if @_assessment
         h 'div', design.typographicCopy 'Open Sans', 300, '18px', 1, 'Your score is: ' + @_assessment.percent
     ]
 
