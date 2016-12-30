@@ -45,14 +45,15 @@ class ChecklistPage
       loadSelectedItemIndexList(assessmentKey).then (list) =>
         if assessmentNav.isActive
           @_assessment = new Assessment @itemList, (@itemList[idx] for idx in list)
-          window.vdomLiveRefresh()
 
   saveCurrentAssessment: ->
     itemIndexList = (index for item, index in @itemList when @_editedData[item])
     @_editedData = null
 
-    @onSave(itemIndexList).then (assessmentKey) =>
-      @_nav.enter '/' + encodeURIComponent assessmentKey
+    setTimeout =>
+      @onSave(itemIndexList).then (assessmentKey) =>
+        @_nav.enter '/' + encodeURIComponent assessmentKey
+    , 3000
 
   render: ->
     pageLayout @title, [
